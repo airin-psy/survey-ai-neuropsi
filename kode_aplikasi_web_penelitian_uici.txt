@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Penelitian Psikologi UICI - Kontrol Inhibitori & Pengambilan Keputusan</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warning: #d97706;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      margin: 0; padding: 20px; background: var(--bg); color: var(--text);
+      display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
+    }
+    .container {
+      width: 100%; max-width: 760px; background: var(--card); border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 32px; margin: 20px 0;
+    }
+    h1 { font-size: 1.45rem; color: var(--primary); margin-top: 0; line-height: 1.4; }
+    h2 { font-size: 1.2rem; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+    p, li { line-height: 1.6; font-size: 0.96rem; }
+    .crisis-box {
+      background: #fef2f2; border-left: 4px solid var(--danger); padding: 14px 18px;
+      border-radius: 6px; margin: 18px 0; font-size: 0.9rem;
+    }
+    .crisis-box ul { margin: 8px 0; padding-left: 20px; }
+    .info-box {
+      background: #eff6ff; border-left: 4px solid var(--primary); padding: 14px 18px;
+      border-radius: 6px; margin: 16px 0;
+    }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    input[type="text"], input[type="number"], select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 0.95rem;
+    }
+    .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+    .radio-inline { flex-direction: row; gap: 20px; }
+    .radio-option {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    }
+    .radio-option:hover { background: #f1f5f9; }
+    .question-card {
+      padding: 14px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px;
+    }
+    .btn {
+      background: var(--primary); color: #fff; border: none; padding: 12px 24px;
+      border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; display: inline-block;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .btn-success { background: var(--success); }
+    .btn-success:hover { background: #15803d; }
+    .btn-warning { background: var(--warning); }
+    .btn-warning:hover { background: #b45309; }
+    .hidden { display: none !important; }
+
+    /* Go/No-Go Styles */
+    .gonogo-arena {
+      width: 100%; height: 320px; border: 2px dashed var(--border); border-radius: 12px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      margin: 20px 0; user-select: none; position: relative; background: #f8fafc;
+    }
+    .stimulus-circle {
+      width: 140px; height: 140px; border-radius: 50%; cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15); transition: transform 0.08s;
+    }
+    .stimulus-circle:active { transform: scale(0.94); }
+    .stim-green { background-color: #22c55e; }
+    .stim-red { background-color: #ef4444; }
+    .fixation { font-size: 2.5rem; color: var(--muted); font-weight: bold; }
+
+    /* BART Styles */
+    .bart-arena {
+      width: 100%; min-height: 360px; border: 2px solid var(--border); border-radius: 12px;
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+      padding: 20px; margin: 20px 0; background: #f8fafc;
+    }
+    .bart-stats {
+      display: flex; justify-content: space-around; width: 100%; background: #fff;
+      padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-weight: 600;
+    }
+    .balloon-stage {
+      height: 220px; display: flex; justify-content: center; align-items: center;
+    }
+    .balloon {
+      width: 70px; height: 85px; background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb);
+      border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%; position: relative;
+      transition: all 0.15s ease-out; box-shadow: inset -6px -6px 14px rgba(0,0,0,0.2);
+    }
+    .balloon::after {
+      content: ""; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+      border-left: 6px solid transparent; border-right: 6px solid transparent;
+      border-bottom: 9px solid #2563eb;
+    }
+    .balloon-trial {
+      background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706);
+    }
+    .balloon-trial::after { border-bottom-color: #d97706; }
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px; margin: 16px 0;
+    }
+    .stat-card {
+      background: #f1f5f9; padding: 14px; border-radius: 8px; text-align: center;
+    }
+    .stat-card .val { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .stat-card .lbl { font-size: 0.85rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- STEP 0: INFORMED CONSENT -->
+  <section id="step-consent">
+    <h1>Hubungan Kontrol Inhibitori Dengan Pengambilan Keputusan Berisiko Pada Individu Dewasa Dengan Ciri Borderline Personality Disorder</h1>
+    <p>Selamat datang. Kami adalah Tim Peneliti dari <strong>Program Studi Psikologi Universitas Insan Cita Indonesia (UICI)</strong>. Penelitian ini bertujuan untuk menguji hubungan statistik antara kontrol inhibitori dan pengambilan keputusan berisiko pada individu dewasa dengan variasi ciri BPD.</p>
+
+    <div class="crisis-box">
+      <strong>Catatan Bantuan &amp; Dukungan Krisis:</strong>
+      <p style="margin:6px 0;">Apabila selama atau setelah mengisi kuesioner ini Anda merasakan ketidaknyamanan emosional, Anda dapat menghubungi layanan bantuan psikologis berikut:</p>
+      <ul>
+        <li><strong>Layanan Sehat Jiwa (Kemenkes):</strong> 119 (Ext. 8)</li>
+        <li><strong>RSJ Amino Gondohutomo Semarang:</strong> (024) 6722565</li>
+        <li><strong>RSJ Marzoeki Mahdi Bogor:</strong> (0251) 8324024, 8324025, 8320467</li>
+        <li><strong>RSJ Soeharto Heerdjan Jakarta:</strong> (021) 5682841</li>
+        <li><strong>RSJ Prof Dr Soerojo Magelang:</strong> (0293) 363601</li>
+        <li><strong>RSJ Radjiman Wediodiningrat Malang:</strong> (0341) 423444</li>
+        <li><strong>Layanan Kontak Tim Penelitian:</strong> Salsabila Defika (+6281293829725 / verawlak@gmail.com)</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <strong>Persetujuan Keikutsertaan (Informed Consent), Kesukarelaan &amp; Kerahasiaan:</strong>
+      <p style="margin:6px 0 0;">Partisipasi bersifat 100% sukarela. Data Anda dijamin kerahasiaannya, diberikan kode anonim, dan hanya digunakan untuk kepentingan ilmiah. Anda berhak berhenti mengisi kapan saja tanpa konsekuensi apa pun. Jika setuju, maka survei dilanjutkan.</p>
+    </div>
+
+    <div class="form-group">
+      <label class="radio-option">
+        <input type="checkbox" id="consent-check" />
+        <span>Saya telah membaca informasi di atas dan <strong>setuju</strong> untuk berpartisipasi secara sukarela dalam penelitian ini.</span>
+      </label>
+    </div>
+    <button class="btn" onclick="startDemographics()">Setuju &amp; Lanjutkan</button>
+  </section>
+
+  <!-- STEP 1: DEMOGRAFI -->
+  <section id="step-demographics" class="hidden">
+    <h2>BAGIAN 1: KONDISI DEMOGRAFI</h2>
+
+    <div class="form-group">
+      <label for="kode-responden">Kode Responden / Inisial</label>
+      <small style="color:var(--muted); display:block; margin-bottom:6px;">Format: 2 huruf awal nama Anda + 2 digit tahun lahir (Contoh: Dewi 1998 &rarr; <strong>DE98</strong>)</small>
+      <input type="text" id="kode-responden" placeholder="Contoh: DE98" maxlength="6" style="text-transform:uppercase;" />
+    </div>
+
+    <div class="form-group">
+      <label for="usia">Usia (Tahun)</label>
+      <input type="number" id="usia" placeholder="Masukkan usia Anda saat ini" min="1" max="120" />
+    </div>
+
+    <div class="form-group">
+      <label>Kewarganegaraan</label>
+      <div class="radio-group radio-inline">
+        <label class="radio-option"><input type="radio" name="wn" value="WNI" /> WNI</label>
+        <label class="radio-option"><input type="radio" name="wn" value="WNA" /> WNA</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Jenis Kelamin</label>
+      <div class="radio-group radio-inline">
+        <label class="radio-option"><input type="radio" name="jk" value="Laki-laki" /> Laki-laki</label>
+        <label class="radio-option"><input type="radio" name="jk" value="Perempuan" /> Perempuan</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="pendidikan">Dasar Pendidikan Terakhir</label>
+      <select id="pendidikan">
+        <option value="">-- Pilih Pendidikan --</option>
+        <option value="SMA / SMK / Sederajat">SMA / SMK / Sederajat</option>
+        <option value="Diploma (D3/D4)">Diploma (D3/D4)</option>
+        <option value="Sarjana (S1)">Sarjana (S1)</option>
+        <option value="Pascasarjana (S2/S3)">Pascasarjana (S2/S3)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Kondisi Saat Ini</label>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="kondisi" value="Fit" />
+          <span>Saya dalam kondisi fit dan tidak sedang mengonsumsi obat yang memengaruhi waktu reaksi/kesadaran.</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="kondisi" value="Tidak Fit" />
+          <span>Sedang mengonsumsi obat dan Ada keterbatasan motorik/mental.</span>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn" onclick="validateDemographics()">Lanjut ke Bagian 2</button>
+  </section>
+
+  <!-- TERMINATED SCREEN (OUT OF CRITERIA) -->
+  <section id="step-terminated" class="hidden">
+    <h2>Terima Kasih Atas Partisipasi Anda</h2>
+    <div class="info-box">
+      <p id="termination-reason">Mohon maaf, kriteria Anda berada di luar target partisipan penelitian ini sehingga sesi survei berakhir di sini.</p>
+    </div>
+    <p>Terima kasih telah meluangkan waktu untuk mendukung penelitian Program Studi Psikologi Universitas Insan Cita Indonesia (UICI).</p>
+  </section>
+
+  <!-- STEP 2: MSI-BPD -->
+  <section id="step-msibpd" class="hidden">
+    <h2>BAGIAN 2: SKALA MSI-BPD (McLean Screening Instrument for BPD)</h2>
+    <div class="info-box">
+      <p style="margin:0;">“Jawablah pertanyaan-pertanyaan berikut sesuai dengan apa yang Anda rasakan atau alami dalam beberapa tahun terakhir. Jawab dengan jujur sesuai kondisi Anda dengan Pilihan Jawaban: <strong>YA</strong> atau <strong>TIDAK</strong>”</p>
+    </div>
+    <div id="msibpd-questions"></div>
+    <button class="btn" onclick="submitMsibpd()">Simpan Jawaban &amp; Lanjut</button>
+  </section>
+
+  <!-- BREAK SCREEN -->
+  <section id="step-break" class="hidden">
+    <h2>Waktu Istirahat Sejenak</h2>
+    <div class="info-box">
+      <p style="margin:0;">Setelah sesi ini, Anda bisa santai sejenak sebelum kita masuk di sesi permainan interaktif.</p>
+    </div>
+    <p>Pastikan Anda berada di posisi yang nyaman dan fokus sebelum memulai permainan pertama.</p>
+    <button class="btn" onclick="goToGoNoGoIntro()">Siap Masuk Sesi Permainan 1</button>
+  </section>
+
+  <!-- STEP 3: GO/NO-GO TASK -->
+  <section id="step-gonogo-intro" class="hidden">
+    <h2>BAGIAN 3: SESI PERMAINAN INTERAKTIF GO/NO-GO TASK</h2>
+    <div class="info-box">
+      <p>“Sesi ini bertujuan untuk mengukur Inhibisi respon yaitu kemampuan untuk melakukan atau menahan respon terhadap sebuah kondisi yang ada.”</p>
+      <p style="margin-bottom:0;">“Bentuk permainannya: Terdapat 2 bentuk yang akan muncul selama <strong>40 kali</strong>, dan tugas Anda adalah <strong>Tap/Klik pada Bulatan berwarna hijau</strong> dan <strong>Tidak Tap/Klik pada Bulatan berwarna merah</strong>.”</p>
+    </div>
+    <button class="btn" onclick="startGoNoGo()">Mulai Permainan Go/No-Go</button>
+  </section>
+
+  <section id="step-gonogo-play" class="hidden">
+    <h2>Permainan Go/No-Go (<span id="gng-counter">0</span> / 40)</h2>
+    <p style="text-align:center; color:var(--muted);"><strong>Tap/Klik</strong> secepat mungkin jika muncul <strong>HIJAU</strong>. <strong>JANGAN Tap/Klik</strong> jika muncul <strong>MERAH</strong>.</p>
+    <div class="gonogo-arena" id="gng-arena">
+      <div class="fixation">+</div>
+    </div>
+  </section>
+
+  <section id="step-gonogo-result" class="hidden">
+    <h2>Hasil Permainan Go/No-Go Task</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="val" id="res-gng-acc">0%</div>
+        <div class="lbl">Persentase Keberhasilan</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="res-gng-ce">0</div>
+        <div class="lbl">Commission Errors (CE)</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="res-gng-mrt">0 ms</div>
+        <div class="lbl">Mean Reaction Time (MRT)</div>
+      </div>
+    </div>
+    <button class="btn" onclick="goToBartIntro()">Lanjut ke Bagian 4 (Pompa Balon)</button>
+  </section>
+
+  <!-- STEP 4: BART (POMPA BALON) -->
+  <section id="step-bart-intro" class="hidden">
+    <h2>BAGIAN 4: SESI PERMAINAN INTERAKTIF POMPA BALON (BART)</h2>
+    <div class="info-box">
+      <p>“Sesi ini bertujuan untuk mengukur perilaku dalam pengambilan resiko dan evaluasi resiko berhadiah.”</p>
+      <p style="margin-bottom:0;">“Bentuk permainannya: Partisipan diminta untuk memompa balon virtual sebanyak mungkin untuk mengumpulkan poin dengan adanya resiko balon pecah dan poin didapat akan hangus, sehingga partisipan dapat mengamankan poin yang ada sebelum balon pecah.”</p>
+    </div>
+    <p>Sesi ini diawali dengan <strong>3 balon uji coba (latihan)</strong>, kemudian dilanjutkan dengan <strong>20 balon pengukuran utama</strong>. Setiap pompa bernilai <strong>10 poin</strong>.</p>
+    <button class="btn" onclick="startBart()">Mulai Sesi Uji Coba (3 Balon)</button>
+  </section>
+
+  <section id="step-bart-play" class="hidden">
+    <h2 id="bart-phase-title">Sesi Uji Coba (Balon 1 / 3)</h2>
+    <div class="bart-arena">
+      <div class="bart-stats">
+        <span>Total Poin Aman: <strong id="bart-total-points">0</strong></span>
+        <span>Poin Balon Ini: <strong id="bart-current-points">0</strong></span>
+        <span>Pompaan: <strong id="bart-current-pumps">0</strong></span>
+      </div>
+      <div class="balloon-stage">
+        <div id="balloon-visual" class="balloon balloon-trial"></div>
+      </div>
+      <div id="bart-feedback" style="height:24px; font-weight:600; color:var(--danger);"></div>
+      <div style="display:flex; gap:14px;">
+        <button class="btn" id="btn-pump" onclick="pumpBalloon()">Pompa Balon (+10 Poin)</button>
+        <button class="btn btn-success" id="btn-collect" onclick="collectBalloon()">Amankan Poin</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL RESULT & SUBMISSION -->
+  <section id="step-final" class="hidden">
+    <h2>Hasil Permainan Pompa Balon &amp; Selesai</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="val" id="res-bart-points">0</div>
+        <div class="lbl">Total Poin Didapat</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="res-bart-popped">0</div>
+        <div class="lbl">Balon Pecah</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="res-bart-unpopped">0</div>
+        <div class="lbl">Balon Tidak Pecah</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="res-bart-adj">0</div>
+        <div class="lbl">Adjusted Pumps (Rata-rata)</div>
+      </div>
+    </div>
+
+    <div class="info-box" style="text-align:center; font-size:1.05rem;">
+      <strong>“Terima kasih sudah meluangkan waktu dan berpartisipasi dalam penelitan kami, Have a Great Day”</strong>
+    </div>
+
+    <p id="sync-status" style="text-align:center; font-weight:600; color:var(--primary);">Menyimpan data ke server penelitian...</p>
+  </section>
+</div>
+
+<script>
+  // URL Google Apps Script Anda
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkgQefudoySnm4L5eGEBwtzcbPnSyqXqOyO4dOx8eGyX7XdjZeQw2cIsNS0KrCko1SFg/exec";
+
+  // State Penelitian
+  const researchData = {
+    timestamp: "",
+    kodeResponden: "",
+    usia: 0,
+    kewarganegaraan: "",
+    jenisKelamin: "",
+    pendidikan: "",
+    kondisi: "",
+    msibpdItems: [],
+    msibpdTotalScore: 0,
+    gngAccuracy: 0,
+    gngCommissionErrors: 0,
+    gngOmissionErrors: 0,
+    gngMeanRT: 0,
+    bartTotalPoints: 0,
+    bartPopped: 0,
+    bartUnpopped: 0,
+    bartAdjustedPumps: 0
+  };
+
+  function showStep(stepId) {
+    document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
+    document.getElementById(stepId).classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // STEP 0 -> STEP 1
+  function startDemographics() {
+    if (!document.getElementById("consent-check").checked) {
+      alert("Silakan centang kotak persetujuan (Informed Consent) terlebih dahulu untuk melanjutkan.");
+      return;
+    }
+    showStep("step-demographics");
+  }
+
+  // STEP 1 VALIDATION
+  function validateDemographics() {
+    const kode = document.getElementById("kode-responden").value.trim().toUpperCase();
+    const usia = parseInt(document.getElementById("usia").value, 10);
+    const wn = document.querySelector('input[name="wn"]:checked');
+    const jk = document.querySelector('input[name="jk"]:checked');
+    const pendidikan = document.getElementById("pendidikan").value;
+    const kondisi = document.querySelector('input[name="kondisi"]:checked');
+
+    if (!kode || isNaN(usia) || !wn || !jk || !pendidikan || !kondisi) {
+      alert("Mohon lengkapi seluruh data demografi terlebih dahulu.");
+      return;
+    }
+
+    // Kriteria Eksklusi
+    if (usia < 18 || usia > 40) {
+      document.getElementById("termination-reason").innerText =
+        "Mohon maaf, kriteria usia target partisipan penelitian ini adalah 18 hingga 40 tahun. Survei berakhir di sini.";
+      showStep("step-terminated");
+      return;
+    }
+    if (wn.value === "WNA") {
+      document.getElementById("termination-reason").innerText =
+        "Mohon maaf, penelitian ini khusus untuk Warga Negara Indonesia (WNI). Survei berakhir di sini.";
+      showStep("step-terminated");
+      return;
+    }
+    if (kondisi.value === "Tidak Fit") {
+      document.getElementById("termination-reason").innerText =
+        "Mohon maaf, demi validitas pengukuran waktu reaksi kognitif, partisipan diharapkan dalam kondisi fit dan tidak sedang mengonsumsi obat yang memengaruhi kesadaran/motorik. Survei berakhir di sini.";
+      showStep("step-terminated");
+      return;
+    }
+
+    researchData.kodeResponden = kode;
+    researchData.usia = usia;
+    researchData.kewarganegaraan = wn.value;
+    researchData.jenisKelamin = jk.value;
+    researchData.pendidikan = pendidikan;
+    researchData.kondisi = kondisi.value;
+
+    renderMsibpd();
+    showStep("step-msibpd");
+  }
+
+  // STEP 2: MSI-BPD
+  const msibpdQuestionsList = [
+    "Apakah Anda sering melakukan usaha yang berlebihan untuk menghindari perasaan ditinggalkan atau dicampakkan oleh orang-orang terdekat Anda?",
+    "Apakah hubungan Anda dengan orang-orang terdekat sering kali diwarnai oleh pertengkaran hebat, putus-nyambung, atau perubahan drastis antara sangat mengagumi dan sangat membenci mereka?",
+    "Apakah Anda sering merasa tidak pasti tentang siapa diri Anda sesungguhnya, tujuan hidup Anda, atau nilai-nilai yang Anda pegang?",
+    "Apakah Anda pernah setidaknya dalam 2 area kehidupan bertindak secara impulsif yang berpotensi merugikan diri sendiri (misalnya: belanja berlebihan, seks berisiko, penyalahgunaan zat, menyetir ugal-ugalan, atau makan berlebihan)?",
+    "Apakah Anda pernah sengaja melukai diri sendiri (seperti memotong/menggores kulit) atau melakukan tindakan/ancaman bunuh diri?",
+    "Apakah Anda sering mengalami perubahan suasana hati (mood) yang sangat drastis dan cepat (misalnya dari sangat sedih, cemas, atau marah menjadi tenang kembali dalam hitungan jam)?",
+    "Apakah Anda sering merasakan perasaan hampa, kosong, atau kesepian yang mendalam di dalam diri Anda secara kronis/terus-menerus?",
+    "Apakah Anda sering merasa sangat sulit mengendalikan rasa marah, atau sering meluapkan kemarahan secara berlebihan yang belakangan Anda sesali?",
+    "Saat berada dalam kondisi stres berat, apakah Anda pernah merasa curiga berlebihan (paranoid) terhadap orang lain atau merasa seperti terpisah dari tubuh/realitas Anda (disosiasi)?",
+    "Apakah Anda merasa emosi Anda jauh lebih sensitif dan membutuhkan waktu lebih lama untuk kembali tenang dibandingkan orang lain?"
+  ];
+
+  function renderMsibpd() {
+    const container = document.getElementById("msibpd-questions");
+    container.innerHTML = "";
+    msibpdQuestionsList.forEach((q, idx) => {
+      const div = document.createElement("div");
+      div.className = "question-card";
+      div.innerHTML = `
+        <p style="margin-top:0;"><strong>${idx + 1}.</strong> ${q}</p>
+        <div class="radio-group radio-inline">
+          <label class="radio-option"><input type="radio" name="msi_${idx}" value="1" /> YA</label>
+          <label class="radio-option"><input type="radio" name="msi_${idx}" value="0" /> TIDAK</label>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function submitMsibpd() {
+    const answers = [];
+    let total = 0;
+    for (let i = 0; i < msibpdQuestionsList.length; i++) {
+      const selected = document.querySelector(`input[name="msi_${i}"]:checked`);
+      if (!selected) {
+        alert(`Mohon jawab pertanyaan nomor ${i + 1} terlebih dahulu.`);
+        return;
+      }
+      const val = parseInt(selected.value, 10);
+      answers.push(val);
+      total += val;
+    }
+    researchData.msibpdItems = answers;
+    researchData.msibpdTotalScore = total;
+    showStep("step-break");
+  }
+
+  // STEP 3: GO/NO-GO TASK (40 TRIALS: 30 GO [75%], 10 NO-GO [25%])
+  function goToGoNoGoIntro() {
+    showStep("step-gonogo-intro");
+  }
+
+  let gngTrials = [];
+  let gngIndex = 0;
+  let gngStimStartTime = 0;
+  let gngResponded = false;
+  let gngTimer = null;
+
+  let gngCorrectGo = 0;
+  let gngCorrectNoGo = 0;
+  let gngCommissionErrors = 0; // Tap pada merah
+  let gngOmissionErrors = 0;   // Tidak tap pada hijau
+  let gngReactionTimes = [];
+
+  function startGoNoGo() {
+    // Buat 40 percobaan (30 Go hijau, 10 No-Go merah) lalu acak
+    gngTrials = Array(30).fill("GO").concat(Array(10).fill("NOGO"));
+    for (let i = gngTrials.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [gngTrials[i], gngTrials[j]] = [gngTrials[j], gngTrials[i]];
+    }
+
+    gngIndex = 0;
+    gngCorrectGo = 0;
+    gngCorrectNoGo = 0;
+    gngCommissionErrors = 0;
+    gngOmissionErrors = 0;
+    gngReactionTimes = [];
+
+    showStep("step-gonogo-play");
+    runNextGoNoGoTrial();
+  }
+
+  function runNextGoNoGoTrial() {
+    if (gngIndex >= gngTrials.length) {
+      finishGoNoGo();
+      return;
+    }
+
+    document.getElementById("gng-counter").innerText = gngIndex + 1;
+    const arena = document.getElementById("gng-arena");
+    arena.innerHTML = '<div class="fixation">+</div>';
+    gngResponded = false;
+
+    // Jeda fiksasi 500ms sebelum stimulus muncul
+    setTimeout(() => {
+      const type = gngTrials[gngIndex];
+      const circle = document.createElement("div");
+      circle.className = "stimulus-circle " + (type === "GO" ? "stim-green" : "stim-red");
+      arena.innerHTML = "";
+      arena.appendChild(circle);
+
+      gngStimStartTime = performance.now();
+
+      const handleTap = () => {
+        if (gngResponded) return;
+        gngResponded = true;
+        const rt = Math.round(performance.now() - gngStimStartTime);
+
+        if (type === "GO") {
+          gngCorrectGo++;
+          gngReactionTimes.push(rt);
+        } else {
+          gngCommissionErrors++;
+        }
+        clearTimeout(gngTimer);
+        gngIndex++;
+        runNextGoNoGoTrial();
+      };
+
+      circle.addEventListener("pointerdown", handleTap);
+
+      // Durasi stimulus maksimal 1200ms
+      gngTimer = setTimeout(() => {
+        if (!gngResponded) {
+          if (type === "GO") {
+            gngOmissionErrors++;
+          } else {
+            gngCorrectNoGo++;
+          }
+          gngIndex++;
+          runNextGoNoGoTrial();
+        }
+      }, 1200);
+    }, 500);
+  }
+
+  function finishGoNoGo() {
+    const totalCorrect = gngCorrectGo + gngCorrectNoGo;
+    const accuracy = ((totalCorrect / 40) * 100).toFixed(1);
+    const meanRT = gngReactionTimes.length > 0
+      ? Math.round(gngReactionTimes.reduce((a, b) => a + b, 0) / gngReactionTimes.length)
+      : 0;
+
+    researchData.gngAccuracy = parseFloat(accuracy);
+    researchData.gngCommissionErrors = gngCommissionErrors;
+    researchData.gngOmissionErrors = gngOmissionErrors;
+    researchData.gngMeanRT = meanRT;
+
+    document.getElementById("res-gng-acc").innerText = accuracy + "%";
+    document.getElementById("res-gng-ce").innerText = gngCommissionErrors;
+    document.getElementById("res-gng-mrt").innerText = meanRT + " ms";
+
+    showStep("step-gonogo-result");
+  }
+
+  // STEP 4: BART (3 TRIAL + 20 MAIN BALLOONS)
+  function goToBartIntro() {
+    showStep("step-bart-intro");
+  }
+
+  const TRIAL_COUNT = 3;
+  const MAIN_COUNT = 20;
+  let bartCurrentBalloon = 1; // 1..23 (1-3 uji coba, 4-23 utama)
+  let bartBurstPoint = 0;
+  let bartCurrentPumps = 0;
+  let bartTotalPoints = 0;
+  let bartPoppedCount = 0;
+  let bartUnpoppedCount = 0;
+  let bartUnpoppedPumpsArray = []; // Untuk Adjusted BART score
+  let bartLocked = false;
+
+  function startBart() {
+    bartCurrentBalloon = 1;
+    bartTotalPoints = 0;
+    bartPoppedCount = 0;
+    bartUnpoppedCount = 0;
+    bartUnpoppedPumpsArray = [];
+    setupBalloon();
+    showStep("step-bart-play");
+  }
+
+  function setupBalloon() {
+    bartLocked = false;
+    bartCurrentPumps = 0;
+    // Titik pecah acak antara pompaan ke-2 sampai ke-16
+    bartBurstPoint = Math.floor(Math.random() * 15) + 2;
+
+    const isTrial = bartCurrentBalloon <= TRIAL_COUNT;
+    const titleEl = document.getElementById("bart-phase-title");
+    const balloonEl = document.getElementById("balloon-visual");
+
+    if (isTrial) {
+      titleEl.innerText = `Sesi Uji Coba (Balon ${bartCurrentBalloon} / ${TRIAL_COUNT})`;
+      balloonEl.className = "balloon balloon-trial";
+    } else {
+      const mainNum = bartCurrentBalloon - TRIAL_COUNT;
+      titleEl.innerText = `Sesi Pengukuran Utama (Balon ${mainNum} / ${MAIN_COUNT})`;
+      balloonEl.className = "balloon";
+    }
+
+    balloonEl.style.width = "70px";
+    balloonEl.style.height = "85px";
+    balloonEl.style.opacity = "1";
+    document.getElementById("bart-feedback").innerText = "";
+    document.getElementById("bart-current-pumps").innerText = "0";
+    document.getElementById("bart-current-points").innerText = "0";
+    document.getElementById("bart-total-points").innerText = bartTotalPoints;
+    document.getElementById("btn-pump").disabled = false;
+    document.getElementById("btn-collect").disabled = false;
+  }
+
+  function pumpBalloon() {
+    if (bartLocked) return;
+    bartCurrentPumps++;
+
+    const isTrial = bartCurrentBalloon <= TRIAL_COUNT;
+
+    // Cek pecah
+    if (bartCurrentPumps >= bartBurstPoint) {
+      bartLocked = true;
+      const balloonEl = document.getElementById("balloon-visual");
+      balloonEl.style.opacity = "0";
+      document.getElementById("bart-feedback").style.color = "var(--danger)";
+      document.getElementById("bart-feedback").innerText = "DOR! Balon pecah! Poin balon ini hangus.";
+      document.getElementById("btn-pump").disabled = true;
+      document.getElementById("btn-collect").disabled = true;
+
+      if (!isTrial) {
+        bartPoppedCount++;
+      }
+
+      setTimeout(() => advanceBalloon(), 1200);
+      return;
+    }
+
+    // Perbesar visual balon
+    const balloonEl = document.getElementById("balloon-visual");
+    const newW = 70 + bartCurrentPumps * 7;
+    const newH = 85 + bartCurrentPumps * 8;
+    balloonEl.style.width = newW + "px";
+    balloonEl.style.height = newH + "px";
+
+    document.getElementById("bart-current-pumps").innerText = bartCurrentPumps;
+    document.getElementById("bart-current-points").innerText = bartCurrentPumps * 10;
+  }
+
+  function collectBalloon() {
+    if (bartLocked) return;
+    if (bartCurrentPumps === 0) {
+      alert("Pompa balon minimal 1 kali sebelum mengamankan poin.");
+      return;
+    }
+
+    bartLocked = true;
+    const isTrial = bartCurrentBalloon <= TRIAL_COUNT;
+    const earned = bartCurrentPumps * 10;
+
+    if (!isTrial) {
+      bartTotalPoints += earned;
+      bartUnpoppedCount++;
+      bartUnpoppedPumpsArray.push(bartCurrentPumps);
+    }
+
+    document.getElementById("bart-total-points").innerText = bartTotalPoints;
+    document.getElementById("bart-feedback").style.color = "var(--success)";
+    document.getElementById("bart-feedback").innerText = isTrial
+      ? `Latihan berhasil! (+${earned} poin simulasi)`
+      : `Berhasil mengamankan +${earned} poin!`;
+    document.getElementById("btn-pump").disabled = true;
+    document.getElementById("btn-collect").disabled = true;
+
+    setTimeout(() => advanceBalloon(), 1000);
+  }
+
+  function advanceBalloon() {
+    if (bartCurrentBalloon === TRIAL_COUNT) {
+      alert("Sesi 3 balon uji coba selesai! Sekarang kita masuk ke 20 balon pengukuran utama (poin akan direkam).");
+    }
+
+    if (bartCurrentBalloon < TRIAL_COUNT + MAIN_COUNT) {
+      bartCurrentBalloon++;
+      setupBalloon();
+    } else {
+      finishBart();
+    }
+  }
+
+  function finishBart() {
+    const adjustedPumps = bartUnpoppedPumpsArray.length > 0
+      ? (bartUnpoppedPumpsArray.reduce((a, b) => a + b, 0) / bartUnpoppedPumpsArray.length).toFixed(2)
+      : 0;
+
+    researchData.bartTotalPoints = bartTotalPoints;
+    researchData.bartPopped = bartPoppedCount;
+    researchData.bartUnpopped = bartUnpoppedCount;
+    researchData.bartAdjustedPumps = parseFloat(adjustedPumps);
+    researchData.timestamp = new Date().toISOString();
+
+    document.getElementById("res-bart-points").innerText = bartTotalPoints;
+    document.getElementById("res-bart-popped").innerText = bartPoppedCount;
+    document.getElementById("res-bart-unpopped").innerText = bartUnpoppedCount;
+    document.getElementById("res-bart-adj").innerText = adjustedPumps;
+
+    showStep("step-final");
+    sendDataToGoogleSheets();
+  }
+
+  // KIRIM DATA KE GOOGLE APPS SCRIPT
+  function sendDataToGoogleSheets() {
+    const statusEl = document.getElementById("sync-status");
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(researchData)
+    })
+    .then(() => {
+      statusEl.style.color = "var(--success)";
+      statusEl.innerText = "Data penelitian berhasil dikirim dan tercatat.";
+    })
+    .catch((err) => {
+      console.error(err);
+      statusEl.style.color = "var(--danger)";
+      statusEl.innerText = "Terjadi kendala koneksi saat mengirim data. Silakan hubungi tim peneliti.";
+    });
+  }
+</script>
+</body>
+</html>
