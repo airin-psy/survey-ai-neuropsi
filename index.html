@@ -65,6 +65,8 @@
     .btn-success:hover { background: #15803d; }
     .btn-warning { background: var(--warning); }
     .btn-warning:hover { background: #b45309; }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #b91c1c; }
     .hidden { display: none !important; }
 
     /* Go/No-Go Styles */
@@ -172,6 +174,11 @@
     </div>
 
     <div class="form-group">
+      <label for="domisili">Kota Tempat Tinggal / Domisili</label>
+      <input type="text" id="domisili" placeholder="Contoh: Jakarta Selatan / Bandung / Surabaya" />
+    </div>
+
+    <div class="form-group">
       <label>Kewarganegaraan</label>
       <div class="radio-group radio-inline">
         <label class="radio-option"><input type="radio" name="wn" value="WNI" /> WNI</label>
@@ -222,6 +229,9 @@
       <p id="termination-reason">Mohon maaf, kriteria Anda berada di luar target partisipan penelitian ini sehingga sesi survei berakhir di sini.</p>
     </div>
     <p>Terima kasih telah meluangkan waktu untuk mendukung penelitian Program Studi Psikologi Universitas Insan Cita Indonesia (UICI).</p>
+    <div style="text-align:center; margin-top:20px;">
+      <button class="btn btn-danger" onclick="closeSurveyPage()">Tutup Halaman</button>
+    </div>
   </section>
 
   <!-- STEP 2: MSI-BPD -->
@@ -251,7 +261,15 @@
       <p>“Sesi ini bertujuan untuk mengukur Inhibisi respon yaitu kemampuan untuk melakukan atau menahan respon terhadap sebuah kondisi yang ada.”</p>
       <p style="margin-bottom:0;">“Bentuk permainannya: Terdapat 2 bentuk yang akan muncul selama <strong>40 kali</strong>, dan tugas Anda adalah <strong>Tap/Klik pada Bulatan berwarna hijau</strong> dan <strong>Tidak Tap/Klik pada Bulatan berwarna merah</strong>.”</p>
     </div>
-    <button class="btn" onclick="startGoNoGo()">Mulai Permainan Go/No-Go</button>
+
+    <div class="form-group">
+      <label class="radio-option">
+        <input type="checkbox" id="gng-understand-check" onchange="toggleGngStartBtn()" />
+        <span><strong>Saya memahami instruksi dan prosedur kerja</strong> permainan Go/No-Go Task di atas dan siap memulai.</span>
+      </label>
+    </div>
+
+    <button class="btn" id="btn-start-gng" onclick="startGoNoGo()" disabled>Saya Paham &amp; Mulai Permainan Go/No-Go</button>
   </section>
 
   <section id="step-gonogo-play" class="hidden">
@@ -289,7 +307,15 @@
       <p style="margin-bottom:0;">“Bentuk permainannya: Partisipan diminta untuk memompa balon virtual sebanyak mungkin untuk mengumpulkan poin dengan adanya resiko balon pecah dan poin didapat akan hangus, sehingga partisipan dapat mengamankan poin yang ada sebelum balon pecah.”</p>
     </div>
     <p>Sesi ini diawali dengan <strong>3 balon uji coba (latihan)</strong>, kemudian dilanjutkan dengan <strong>20 balon pengukuran utama</strong>. Setiap pompa bernilai <strong>10 poin</strong>.</p>
-    <button class="btn" onclick="startBart()">Mulai Sesi Uji Coba (3 Balon)</button>
+
+    <div class="form-group">
+      <label class="radio-option">
+        <input type="checkbox" id="bart-understand-check" onchange="toggleBartStartBtn()" />
+        <span><strong>Saya memahami instruksi dan prosedur kerja</strong> permainan Pompa Balon (BART) di atas dan siap memulai sesi uji coba.</span>
+      </label>
+    </div>
+
+    <button class="btn" id="btn-start-bart" onclick="startBart()" disabled>Saya Paham &amp; Mulai Sesi Uji Coba (3 Balon)</button>
   </section>
 
   <section id="step-bart-play" class="hidden">
@@ -338,6 +364,13 @@
     </div>
 
     <p id="sync-status" style="text-align:center; font-weight:600; color:var(--primary);">Menyimpan data ke server penelitian...</p>
+
+    <div style="text-align:center; margin-top:24px;">
+      <button class="btn btn-danger" onclick="closeSurveyPage()">Tutup Halaman Survei</button>
+      <p id="close-fallback-msg" class="hidden" style="color:var(--muted); font-size:0.9rem; margin-top:10px;">
+        Survei telah selesai dan data Anda aman. Silakan tutup tab atau jendela browser ini secara manual.
+      </p>
+    </div>
   </section>
 </div>
 
@@ -350,6 +383,7 @@
     timestamp: "",
     kodeResponden: "",
     usia: 0,
+    domisili: "",
     kewarganegaraan: "",
     jenisKelamin: "",
     pendidikan: "",
@@ -385,13 +419,14 @@
   function validateDemographics() {
     const kode = document.getElementById("kode-responden").value.trim().toUpperCase();
     const usia = parseInt(document.getElementById("usia").value, 10);
+    const domisili = document.getElementById("domisili").value.trim();
     const wn = document.querySelector('input[name="wn"]:checked');
     const jk = document.querySelector('input[name="jk"]:checked');
     const pendidikan = document.getElementById("pendidikan").value;
     const kondisi = document.querySelector('input[name="kondisi"]:checked');
 
-    if (!kode || isNaN(usia) || !wn || !jk || !pendidikan || !kondisi) {
-      alert("Mohon lengkapi seluruh data demografi terlebih dahulu.");
+    if (!kode || isNaN(usia) || !domisili || !wn || !jk || !pendidikan || !kondisi) {
+      alert("Mohon lengkapi seluruh data demografi terlebih dahulu (termasuk Kota Tempat Tinggal/Domisili).");
       return;
     }
 
@@ -417,6 +452,7 @@
 
     researchData.kodeResponden = kode;
     researchData.usia = usia;
+    researchData.domisili = domisili;
     researchData.kewarganegaraan = wn.value;
     researchData.jenisKelamin = jk.value;
     researchData.pendidikan = pendidikan;
@@ -477,7 +513,14 @@
 
   // STEP 3: GO/NO-GO TASK (40 TRIALS: 30 GO [75%], 10 NO-GO [25%])
   function goToGoNoGoIntro() {
+    document.getElementById("gng-understand-check").checked = false;
+    document.getElementById("btn-start-gng").disabled = true;
     showStep("step-gonogo-intro");
+  }
+
+  function toggleGngStartBtn() {
+    const isChecked = document.getElementById("gng-understand-check").checked;
+    document.getElementById("btn-start-gng").disabled = !isChecked;
   }
 
   let gngTrials = [];
@@ -493,6 +536,11 @@
   let gngReactionTimes = [];
 
   function startGoNoGo() {
+    if (!document.getElementById("gng-understand-check").checked) {
+      alert("Silakan centang kotak pemahaman instruksi terlebih dahulu.");
+      return;
+    }
+
     // Buat 40 percobaan (30 Go hijau, 10 No-Go merah) lalu acak
     gngTrials = Array(30).fill("GO").concat(Array(10).fill("NOGO"));
     for (let i = gngTrials.length - 1; i > 0; i--) {
@@ -586,7 +634,14 @@
 
   // STEP 4: BART (3 TRIAL + 20 MAIN BALLOONS)
   function goToBartIntro() {
+    document.getElementById("bart-understand-check").checked = false;
+    document.getElementById("btn-start-bart").disabled = true;
     showStep("step-bart-intro");
+  }
+
+  function toggleBartStartBtn() {
+    const isChecked = document.getElementById("bart-understand-check").checked;
+    document.getElementById("btn-start-bart").disabled = !isChecked;
   }
 
   const TRIAL_COUNT = 3;
@@ -601,6 +656,11 @@
   let bartLocked = false;
 
   function startBart() {
+    if (!document.getElementById("bart-understand-check").checked) {
+      alert("Silakan centang kotak pemahaman instruksi terlebih dahulu.");
+      return;
+    }
+
     bartCurrentBalloon = 1;
     bartTotalPoints = 0;
     bartPoppedCount = 0;
@@ -755,6 +815,16 @@
       statusEl.style.color = "var(--danger)";
       statusEl.innerText = "Terjadi kendala koneksi saat mengirim data. Silakan hubungi tim peneliti.";
     });
+  }
+
+  // TUTUP HALAMAN SAAT SURVEI SELESAI
+  function closeSurveyPage() {
+    window.close();
+    // Jika browser memblokir window.close() karena tab dibuka langsung oleh pengguna:
+    const fallbackEl = document.getElementById("close-fallback-msg");
+    if (fallbackEl) {
+      fallbackEl.classList.remove("hidden");
+    }
   }
 </script>
 </body>
